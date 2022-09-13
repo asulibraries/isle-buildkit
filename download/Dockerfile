@@ -1,5 +1,5 @@
 # syntax=docker/dockerfile:1.2.1
-ARG alpine=3.15.0
+ARG alpine=3.16.1
 FROM alpine:${alpine} AS cache
 FROM alpine:${alpine}
 

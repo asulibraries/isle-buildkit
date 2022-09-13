@@ -3,12 +3,12 @@ ARG repository=local
 ARG tag=latest
 FROM --platform=$BUILDPLATFORM ${repository}/composer:${tag} AS composer
 
-ARG COMMIT=6e95f2f325c910b254a2b7bd1cedf25b17874d30
+ARG COMMIT=a7ed65283912846eff76adfcc4ec14c93e5b611c
 
 RUN --mount=type=cache,id=crayfits-downloads,sharing=locked,target=/opt/downloads \
     --mount=type=cache,id=crayfish-composer,sharing=locked,target=/root/.composer/cache \
     git-clone-cached.sh \
-        --url https://github.com/roblib/CrayFits.git \
+        --url https://github.com/nigelgbanks/CrayFits.git \
         --cache-dir "${DOWNLOAD_CACHE_DIRECTORY}" \
         --commit "${COMMIT}" \
         --worktree /var/www/crayfits && \

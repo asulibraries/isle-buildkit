@@ -1,7 +1,7 @@
 # syntax=docker/dockerfile:1.2.1
 ARG repository=local
 ARG tag=latest
-ARG alpine=3.15.0
+ARG alpine=3.16.1
 FROM alpine:${alpine} AS cache
 FROM node:fermium-alpine3.15 as node
 FROM ${repository}/abuild:${tag} AS build
@@ -89,7 +89,7 @@ RUN sed -i "/nginx:x:100:101:nginx:\/var\/lib\/nginx:\/sbin\/nologin/cnginx:x:10
 RUN --mount=type=cache,id=code-server-drupal-apk,sharing=locked,from=cache,target=/var/cache/apk \
     apk --update add \
         htop \
-        php7-pecl-xdebug \
+        php81-pecl-xdebug \
         spdlog \
         sudo \
         unison \

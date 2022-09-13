@@ -1,7 +1,7 @@
 # syntax=docker/dockerfile:1.2.1
 ARG repository=local
 ARG tag=latest
-ARG alpine=3.15.0
+ARG alpine=3.16.1
 FROM --platform=$BUILDPLATFORM ${repository}/download:${tag} AS download
 
 RUN --mount=type=cache,id=drupal-downloads,sharing=locked,target=/opt/downloads \

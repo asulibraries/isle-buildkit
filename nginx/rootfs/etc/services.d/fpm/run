@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 set -e
-exec /usr/sbin/php-fpm7 \
-    --pid /var/run/php-fpm7/php-fpm7.pid \
-    --prefix /var/run/php-fpm7 \
-    --fpm-config /etc/php7/php-fpm.conf
+exec /usr/sbin/php-fpm81 \
+    --pid /var/run/php-fpm8/php-fpm81.pid \
+    --prefix /var/run/php-fpm8 \
+    --fpm-config /etc/php81/php-fpm.conf

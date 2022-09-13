@@ -1,14 +1,14 @@
 # syntax=docker/dockerfile:1.2.1
 ARG repository=local
 ARG tag=latest
-ARG alpine=3.15.0
+ARG alpine=3.16.1
 FROM --platform=$BUILDPLATFORM ${repository}/composer:${tag} AS composer
 
 RUN --mount=type=cache,id=riprap-composer,sharing=locked,target=/root/.composer/cache \
     --mount=type=cache,id=riprap-downloads,sharing=locked,target=/opt/downloads \
-    COMMIT=7d7cae2d09dec20caa3c3f5752434af32401819e && \
+    COMMIT=b84ac14370d0ffa156542e387a8eff9104b8858b && \
     git-clone-cached.sh \
-        --url https://github.com/mjordan/riprap.git \
+        --url https://github.com/nigelgbanks/riprap.git \
         --cache-dir "${DOWNLOAD_CACHE_DIRECTORY}" \
         --commit "${COMMIT}" \
         --worktree /var/www/riprap && \
@@ -20,7 +20,7 @@ FROM ${repository}/nginx:${tag}
 EXPOSE 8000
 
 RUN --mount=type=cache,id=riprap-apk,sharing=locked,from=cache,target=/var/cache/apk \
-    apk add php7-pdo_sqlite && \
+    apk add php81-pdo_sqlite && \
     cleanup.sh
 
 # The driver is given explicitly as Rip Rap can be run on SQLite without

@@ -395,6 +395,8 @@ function update_settings_php {
         drush -l "${site_url}" islandora:settings:set-config-sync-directory ${config_dir}
     fi
 
+    echo "if (PHP_SAPI === 'cli') { ini_set('memory_limit', '1024M'); }" >> ${site_directory}/settings.php
+
     # Restore owner/group to previous value
     restore_settings_ownership ${site} ${previous_owner_group}
 }

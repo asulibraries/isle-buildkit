@@ -395,8 +395,6 @@ function update_settings_php {
         drush -l "${site_url}" islandora:settings:set-config-sync-directory ${config_dir}
     fi
 
-    echo "if (PHP_SAPI === 'cli') { ini_set('memory_limit', '1024M'); }" >> ${site_directory}/settings.php
-
     # Restore owner/group to previous value
     restore_settings_ownership ${site} ${previous_owner_group}
 }
@@ -559,6 +557,8 @@ function configure_openseadragon  {
 function import_islandora_migrations {
     local site="${1}"; shift
     local site_url=$(drupal_site_env "${site}" "SITE_URL")
+    ./vendor/bin/drupal --uri "${site_url}" cis --file web/modules/contrib/islandora/modules/islandora_core_feature/config/install/migrate_plus.migration.islandora_tags.yml
+    ./vendor/bin/drupal --uri "${site_url}" cis --file web/modules/contrib/islandora_defaults/config/install/migrate_plus.migration.islandora_defaults_tags.yml
     drush -l "${site_url}" -y --userid=1 migrate:import islandora_defaults_tags,islandora_tags
 }
 

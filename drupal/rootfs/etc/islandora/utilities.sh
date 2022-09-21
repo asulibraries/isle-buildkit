@@ -290,12 +290,13 @@ function fedora_url {
     local site="${1}"; shift
     local fcrepo_host=$(drupal_site_env "${site}" "FCREPO_HOST")
     local fcrepo_port=$(drupal_site_env "${site}" "FCREPO_PORT")
+    local fcrepo_path=$(drupal_site_env "${site}" "FCREPO_PATH")
 
     # Indexing fails if port 80 is given explicitly.
     if [[ "${fcrepo_port}" == "80" ]]; then
-        echo "http://${fcrepo_host}/fcrepo/rest/"
+        echo "http://${fcrepo_host}${fcrepo_path}"
     else
-        echo "http://${fcrepo_host}:${fcrepo_port}/fcrepo/rest/"
+        echo "http://${fcrepo_host}:${fcrepo_port}${fcrepo_path}"
     fi
 }
 
@@ -369,12 +370,7 @@ function update_settings_php {
 
     if ! grep -q 'global \$content_directories;' ${site_directory}/settings.php; then
         echo 'global $content_directories;' >> ${site_directory}/settings.php
-        echo '$content_directories["sync"] = "/var/www/drupal/content/sync";' >> ${site_directory}/settings.php
-    fi
-
-    if ! grep -q 'global \$content_directories;' ${site_directory}/settings.php; then
-        echo 'global $content_directories;' >> ${site_directory}/settings.php
-        echo '$content_directories["sync"] = "/var/www/drupal/content/sync";' >> ${site_directory}/settings.php
+        echo '$content_directories["sync"] = "${site_directory}/content/sync";' >> ${site_directory}/settings.php
     fi
 
     drush -l "${site_url}" islandora:settings:create-settings-if-missing
@@ -557,8 +553,8 @@ function configure_openseadragon  {
 function import_islandora_migrations {
     local site="${1}"; shift
     local site_url=$(drupal_site_env "${site}" "SITE_URL")
-    ./vendor/bin/drupal --uri "${site_url}" cis --file web/modules/contrib/islandora/modules/islandora_core_feature/config/install/migrate_plus.migration.islandora_tags.yml
-    ./vendor/bin/drupal --uri "${site_url}" cis --file web/modules/contrib/islandora_defaults/config/install/migrate_plus.migration.islandora_defaults_tags.yml
+    ./vendor/bin/drupal --uri="${site_url}" cis --file="/var/www/drupal/web/modules/contrib/islandora/modules/islandora_core_feature/config/install/migrate_plus.migration.islandora_tags.yml"
+    ./vendor/bin/drupal --uri="${site_url}" cis --file="/var/www/drupal/web/modules/contrib/islandora_defaults/config/install/migrate_plus.migration.islandora_defaults_tags.yml"
     drush -l "${site_url}" -y --userid=1 migrate:import islandora_defaults_tags,islandora_tags
 }
 

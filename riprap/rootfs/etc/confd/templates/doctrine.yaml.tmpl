@@ -7,14 +7,14 @@ parameters:
 
 doctrine:
     dbal:
-{{ if eq (getenv "DB_DRIVER") "mysql" }}
+{{ if eq (getenv "RIPRAP_DB_DRIVER") "mysql" }}
         driver: 'pdo_mysql'
         charset: utf8mb4
         default_table_options:
             charset: utf8mb4
             collate: utf8mb4_unicode_ci
 {{ end }}
-{{ if eq (getenv "DB_DRIVER") "postgresql" }}
+{{ if eq (getenv "RIPRAP_DB_DRIVER") "postgresql" }}
         driver: 'pdo_pgsql'
         charset: utf8
 {{ end }}

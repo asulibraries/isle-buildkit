@@ -549,6 +549,19 @@ function configure_openseadragon  {
     drush -l "${site_url}" -y config-set --input-format=yaml islandora_iiif.settings iiif_server "${cantaloupe_url}"
 }
 
+function configure_riprap {
+    if ! drush pm-list --pipe --type=module --status=enabled --no-core | grep -q riprap; then
+        echo "riprap is not installed.  Skipping configuration"
+        return 0
+    fi
+
+    local site="${1}"; shift
+    local site_url=$(drupal_site_env "${site}" "SITE_URL")
+    local riprap_url=$(drupal_site_env "${site}" "RIPRAP_URL")
+
+    drush -l "${site_url}" -y config-set --input-format=yaml islandora_riprap.settings riprap_rest_endpoint "${riprap_url}"
+}
+
 # Imports any migrations in the 'islandora' group.
 function import_islandora_migrations {
     local site="${1}"; shift

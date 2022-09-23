@@ -2,6 +2,7 @@
 set -e
 
 function mysql_create_database {
+    echo "CONNECTION: ${RIPRAP_DB_USER} ${RIPRAP_DB_NAME} ${RIPRAP_DB_PASSWORD}"
     cat <<- EOF | create-database.sh
 -- Create database in mariadb or mysql. 
 CREATE DATABASE IF NOT EXISTS ${RIPRAP_DB_NAME} CHARACTER SET utf8 COLLATE utf8_general_ci;
@@ -39,7 +40,8 @@ EOF
 }
 
 function create_database {
-    case "${DB_DRIVER}" in
+    echo "RIPRAP_DB_DRIVER: ${RIPRAP_DB_DRIVER}" >&2
+    case "${RIPRAP_DB_DRIVER}" in
         sqlite)
             # Running migrations will create the database.
             ;;

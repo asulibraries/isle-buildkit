@@ -120,19 +120,9 @@ USE '${MATOMO_DB_NAME}';
 EOF
 }
 
-# https://dev.mysql.com/doc/refman/8.0/en/user-variables.html
-# Note that:
-# "User variables are intended to provide data values. They cannot be used directly in an SQL statement as an identifier or as part of an identifier..."
-function set_variables {
+function set_database {
    cat <<- EOF
 USE ${MATOMO_DB_NAME};
-
-set @SITE_URL = "${MATOMO_FIRST_SITE_URL}";
-set @SITE_NAME = "${MATOMO_FIRST_SITE_NAME}";
-set @SITE_TIMEZONE = "${MATOMO_DEFAULT_TIMEZONE}";
-set @USER_EMAIL = "${MATOMO_FIRST_USER_EMAIL}";
-set @USER_NAME = "${MATOMO_FIRST_USER_NAME}";
-set @USER_PASS = "${MATOMO_FIRST_USER_PASSWORD}";
 EOF
 }
 
@@ -140,7 +130,7 @@ function created_database {
     if ! database_exists; then
         echo "Creating database: ${MATOMO_DB_NAME}"
         create_database
-        execute-sql-file.sh <(cat <(set_variables) /etc/matomo/create-matomo-database.sql)
+        execute-sql-file.sh <(cat <(set_database) /etc/matomo/create-matomo-database.sql)
     else
         echo "Database: ${MATOMO_DB_NAME} already exists"
     fi

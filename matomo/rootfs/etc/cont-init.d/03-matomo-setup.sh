@@ -24,34 +24,12 @@ function matomo_site_env {
 function create_database {
     cat <<- EOF | create-database.sh
 -- Create matomo database in mariadb or mysql. 
-CREATE DATABASE IF NOT EXISTS ${MATOMO_DB_NAME} CHARACTER SET utf8 COLLATE utf8_general_ci;
+CREATE DATABASE IF NOT EXISTS ${MATOMO_DB_NAME};
 
 -- Create matomo_user and grant rights.
-CREATE USER IF NOT EXISTS ${MATOMO_DB_USER}@'%' IDENTIFIED BY "${MATOMO_DB_PASSWORD}";
-GRANT ALL PRIVILEGES ON ${MATOMO_DB_NAME}.* to ${MATOMO_DB_USER}@'%';
+CREATE USER IF NOT EXISTS ${MATOMO_DB_USERNAME}@'%' IDENTIFIED BY "${MATOMO_DB_PASSWORD}";
+GRANT ALL PRIVILEGES ON ${MATOMO_DB_NAME}.* to ${MATOMO_DB_USERNAME}@'%';
 FLUSH PRIVILEGES;
-EOF
-}
-
-# Patch existing sites, which should only have a single row in the table.
-# This is required to support multiple site configurations going forward.
-function add_missing_column {
-    cat <<- EOF | execute-sql-file.sh
-USE ${MATOMO_DB_NAME};
-
-SET @database = DATABASE();
-
-SELECT count(*)
-INTO @exist
-FROM information_schema.columns
-WHERE table_schema = @database
-and COLUMN_NAME = 'site'
-AND table_name = 'matomo_site' LIMIT 1;
-
-set @query = IF(@exist < 1, 'ALTER TABLE matomo_site ADD COLUMN site VARCHAR(255) NOT NULL UNIQUE AFTER idsite', 'select \'Column Exists\' status');
-prepare stmt from @query;
-
-EXECUTE stmt;
 EOF
 }
 
@@ -103,16 +81,16 @@ SET @site = '${site}',
 
 -- Update or create row if 'site' already exists.
 -- Default values come from 'create-matomo-database.sql.tmpl'.
-INSERT INTO matomo_site (site, name, main_url, ts_created, ecommerce, sitesearch, sitesearch_keyword_parameters, sitesearch_category_parameters, timezone, currency, exclude_unknown_urls, excluded_ips, excluded_parameters, excluded_user_agents, \`group\`, type, keep_url_fragment, creator_login)
-VALUES (@site, @name, @host, NOW(), 0, 1, '', '', @timezone, 'USD', 0, '', '', '', '', 'website', 0, 'anonymous')
+INSERT INTO matomo_site (name, main_url, ts_created, ecommerce, sitesearch, sitesearch_keyword_parameters, sitesearch_category_parameters, timezone, currency, exclude_unknown_urls, excluded_ips, excluded_parameters, excluded_user_agents, excluded_referrers, \`group\`, type, keep_url_fragment, creator_login)
+VALUES (@name, @host, NOW(), 0, 1, '', '', @timezone, 'USD', 0, '', '', '', '', '', 'website', 0, 'anonymous')
 ON DUPLICATE KEY UPDATE
     name = @name,
     main_url = @host,
     timezone = @timezone;
 
 -- Update or create row if 'user' already exists.
-INSERT INTO matomo_user (login, password, alias, email, twofactor_secret, token_auth, superuser_access, date_registered, ts_password_modified)
-VALUES (@user, @password, @user, @email, '', @token, 0, NOW(), NOW())
+INSERT INTO matomo_user (login, password, email, twofactor_secret, superuser_access, date_registered, ts_password_modified)
+VALUES (@user, @password, @email, '', 0, NOW(), NOW())
 ON DUPLICATE KEY UPDATE
     password = @password,
     email = @email,
@@ -130,9 +108,8 @@ EOF
 
 function update_database {
     echo "Updating Database: ${MATOMO_DB_NAME}"
-    add_missing_column
-    update_user
     for site in ${MATOMO_SITES}; do
+        echo "Adding Site: ${site}"
         update_site "${site}"
     done
 }
@@ -150,12 +127,12 @@ function set_variables {
    cat <<- EOF
 USE ${MATOMO_DB_NAME};
 
-set @SITE_URL = "${MATOMO_DEFAULT_HOST}";
-set @SITE_NAME = "${MATOMO_DEFAULT_NAME}";
+set @SITE_URL = "${MATOMO_FIRST_SITE_URL}";
+set @SITE_NAME = "${MATOMO_FIRST_SITE_NAME}";
 set @SITE_TIMEZONE = "${MATOMO_DEFAULT_TIMEZONE}";
-set @USER_EMAIL = "${MATOMO_USER_EMAIL}";
-set @USER_NAME = "${MATOMO_USER_NAME}";
-set @USER_PASS = "${MATOMO_USER_PASS}";
+set @USER_EMAIL = "${MATOMO_FIRST_USER_EMAIL}";
+set @USER_NAME = "${MATOMO_FIRST_USER_NAME}";
+set @USER_PASS = "${MATOMO_FIRST_USER_PASSWORD}";
 EOF
 }
 
@@ -172,5 +149,6 @@ function created_database {
 function main {
     created_database
     update_database
+    chown -R nginx: "/var/www/matomo/tmp"
 }
 main

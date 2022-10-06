@@ -3,7 +3,7 @@
 [database]
 host = {{ getenv "DB_MYSQL_HOST" }}
 port = {{ getenv "DB_MYSQL_PORT" }}
-username = {{ getenv "MATOMO_DB_USER" }}
+username = {{ getenv "MATOMO_DB_USERNAME" }}
 password = {{ getenv "MATOMO_DB_PASSWORD" }}
 dbname = {{ getenv "MATOMO_DB_NAME" }}
 tables_prefix = "matomo_"
@@ -20,8 +20,10 @@ trusted_hosts[] = localhost
 trusted_hosts[] = {{ getenv "MATOMO_DEFAULT_HOST" }}
 {{ range $site := lsdir "/matomo/site" }}trusted_hosts[] = {{ getv (printf "/matomo/site/%s/host" $site) }}
 {{ end }}
+always_load_commands_from_plugin=ExtraTools
 
 [PluginsInstalled]
+PluginsInstalled[] = "ExtraTools"
 PluginsInstalled[] = "Diagnostics"
 PluginsInstalled[] = "Login"
 PluginsInstalled[] = "CoreAdminHome"
@@ -83,3 +85,6 @@ PluginsInstalled[] = "ProfessionalServices"
 PluginsInstalled[] = "UserId"
 PluginsInstalled[] = "CustomPiwikJs"
 PluginsInstalled[] = "Tour"
+
+[ExtraTools]
+db_backup_path = "/var/www/matomo/tmp"

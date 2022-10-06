@@ -34,9 +34,9 @@ metrics for.
 | MATOMO_PROXY_HOST_HEADERS     | /matomo/proxy/host/headers     | HTTP_X_FORWARDED_HOST                                        | <https://matomo.org/faq/how-to-install/faq_98/>                 |
 | MATOMO_PROXY_URI_HEADER       | /matomo/proxy/uri/header       | 1                                                            | <https://matomo.org/faq/how-to-install/faq_98/>                 |
 | MATOMO_SALT                   | /matomo/salt                   | 5a472390550bd59e4428a41aa472137b                             | Used to generate hashes.                                        |
-| MATOMO_USER_EMAIL             | /matomo/user/email             | admin@example.org                                            | The matomo administrator email                                  |
-| MATOMO_USER_NAME              | /matomo/user/name              | admin                                                        | The matomo administrator user                                   |
-| MATOMO_USER_PASS              | /matomo/user/pass              | $2y$10$A4l7KT4bgUt1CFpIqf8A9.sthoj0BP3E6PQ5mMO4enYRs38VGIk5S | The matomo administrator's password (See how to generate below) |
+| MATOMO_DEFAULT_USER_EMAIL     | /matomo/user/email             | admin@example.org                                            | The matomo administrator email                                  |
+| MATOMO_DEFAULT_USER_NAME      | /matomo/user/name              | admin                                                        | The matomo administrator user                                   |
+| MATOMO_DEFAULT_USER_PASS      | /matomo/user/pass              | $2y$10$A4l7KT4bgUt1CFpIqf8A9.sthoj0BP3E6PQ5mMO4enYRs38VGIk5S | The matomo administrator's password (See how to generate below) |
 
 To regenerate a the `MATOMO_USER_PASS` you must use the following snippet of
 [PHP](https://matomo.org/faq/how-to/faq_191/).
@@ -70,8 +70,9 @@ value is supported.
 ### Multi-site Settings
 
 Additional multi-sites can be defined by adding more environment variables,
-following the above conventions, only the `MATOMO_SITE_{SITE}_HOST` is required
-to create an additional site:
+following the above conventions. First, list the new site in `MATOMO_SITES`;
+for example, `MATOMO_SITES={SITE_1},{SITE_2}`.
+Only the `MATOMO_SITE_{SITE}_HOST` is required for each additional site:
 
 | Environment Variable          | Confd Key                      | Default                                                      | Description                                                   |
 | :---------------------------- | :----------------------------- | :----------------------------------------------------------- | :------------------------------------------------------------ |

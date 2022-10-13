@@ -82,6 +82,9 @@ ENV \
     ALPACA_OCR_REDELIVERIES=10 \
     ALPACA_OCR_SERVICE=http://hypercube:8000 \
     ALPACA_OCR_TIMEOUT=10000 \
+    ALPACA_AWSTRANSCRIBE_QUEUE=broker:queue:islandora-connector-awstranscribe \
+    ALPACA_AWSTRANSCRIBE_REDELIVERIES=5 \
+    ALPACA_AWSTRANSCRIBE_SERVICE=http://awstranscribe:8000/startJob \
     JAVA_OPTS="-Dfile.encoding=UTF-8 -Dnet.sf.ehcache.skipUpdateCheck=true -XX:+UseConcMarkSweepGC -XX:+CMSClassUnloadingEnabled -XX:+UseParNewGC -XX:MaxPermSize=128m -Xms512m -Xmx8g"
 
 COPY --from=download --chown=karaf:karaf /opt/karaf /opt/karaf

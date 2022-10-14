@@ -1,6 +1,6 @@
 parameters:
     app.fedoraBaseUrl: '{{ getenv "FEDORA_BASE_URL" }}'
-    app.fedoras3Bucket: 'islandora-fcrepo-bucket'
+    app.fedoras3Bucket: '{{ getenv "FEDORA_AWS_BUCKET" }}'
     app.s3Bucket: '{{ getenv "AWS_TRANSCRIBE_AWS_BUCKET" }}'
     app.fileRoot: '/var/www/awstranscribe/var'
 
